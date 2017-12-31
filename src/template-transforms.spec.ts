@@ -31,5 +31,15 @@ describe('template-transforms', () => {
             expect(upgradeTemplate('<div ng-model="myVar"></div>'))
                 .toEqual('<div [(ngModel)]="myVar"></div>');
         });
+
+        it('should replace `ng-href` with `href`', () => {
+            expect(upgradeTemplate('<div ng-href="https://mysite.com/{{page}}"></div>'))
+                .toEqual('<div href="https://mysite.com/{{page}}"></div>');
+        });
+
+        it('should not change `title` attributes', () => {
+            expect(upgradeTemplate('<div title="Angular is Great!"></div>'))
+                .toEqual('<div title="Angular is Great!"></div>');
+        });
     });
 });
