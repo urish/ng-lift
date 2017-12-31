@@ -1,0 +1,43 @@
+{
+  "name": "ng-lift",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:urish/ng-lift.git",
+  "author": "Uri Shaked <uri@salsa4fun.co.il>",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "prepublish": "npm run build",
+    "lint": "tslint -p .",
+    "test": "npm run lint && jest",
+    "test:watch": "jest --watch"
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "parse5": "^3.0.3",
+    "ts-emitter": "^0.4.0",
+    "typescript": "^2.4.2"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "transform": {
+      "\\.ts$": "ts-jest"
+    },
+    "testMatch": [
+      "**/*.spec.ts"
+    ]
+  },
+  "devDependencies": {
+    "@types/jest": "^22.0.0",
+    "@types/parse5": "^3.0.0",
+    "jest": "^22.0.4",
+    "ts-jest": "^22.0.0",
+    "ts-node": "^4.1.0",
+    "tslint": "^5.8.0"
+  }
+}
