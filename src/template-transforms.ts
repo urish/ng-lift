@@ -36,15 +36,15 @@ export const attributeMapping: IAttributeMapping = {
     'ng-checked': '[checked]',
     'ng-disabled': '[disabled]',
     'ng-hide': '[hidden]',
+    'ng-href': 'href',
     'ng-if': '*ngIf',
     'ng-model': '[(ngModel)]',
     'ng-readonly': '[readonly]',
     'ng-repeat': '*ngFor',
+    'ng-selected': '[selected]',
     'ng-show': (attr: AST.Default.Attribute) => [{
         ...attr, name: '[hidden]', value: negateExpression(attr.value),
     }],
-    'ng-href': 'href',
-    'ng-selected': '[selected]',
     'ng-src': 'src',
     'ng-srcset': 'srcset',
 
@@ -87,8 +87,8 @@ export function upgradeAttributeNames(node: AST.Default.Node): AST.Default.Node 
 
     return {
         ...node,
-        childNodes: node.childNodes.map(upgradeAttributeNames),
         attrs: node.attrs.map(mapAttribute).reduce((acc, arr) => acc.concat(arr), []),
+        childNodes: node.childNodes.map(upgradeAttributeNames),
     } as AST.Default.Element;
 }
 
