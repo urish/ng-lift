@@ -1,10 +1,9 @@
 import * as parse5 from 'parse5';
 import { AST } from 'parse5';
-import { fromSource } from 'ts-emitter';
-import * as ts from 'typescript';
+import { negateExpression , removeCtrlFromExpression } from './template-expression';
 
 export interface ITemplateUpgradeOptions {
-    controllerVar: string;
+    controllerVars: string[];
 }
 
 export type AttributeMappingFn = (attr: AST.Default.Attribute) => AST.Default.Attribute[];
@@ -14,22 +13,11 @@ export interface IAttributeMapping {
 }
 
 const defaultOptions: ITemplateUpgradeOptions = {
-    controllerVar: '$ctrl',
+    controllerVars: ['$ctrl'],
 };
 
 function isElement(node: AST.Default.Node): node is AST.Default.Element {
     return (typeof node as any).childNodes !== 'undefined';
-}
-
-function negateExpression(expression: string) {
-    const ast = fromSource(expression);
-    const node = ast.statements[0];
-    if (ts.isExpressionStatement(node) && ast.statements.length === 1) {
-        const negated = ts.createPrefix(ts.SyntaxKind.ExclamationToken, node.expression);
-        return ts.createPrinter().printNode(ts.EmitHint.Expression, negated, ast);
-    } else {
-        return `!(${expression})`;
-    }
 }
 
 export const attributeMapping: IAttributeMapping = {
@@ -69,11 +57,27 @@ export const attributeMapping: IAttributeMapping = {
     'ng-submit': '(submit)',
 };
 
-export function upgradeAttributeNames(node: AST.Default.Node): AST.Default.Node {
-    if (!isElement(node)) {
-        return node;
+export type NodeMapper = (node: AST.Default.Element) => AST.Default.Element;
+
+export function mapElementNodes(root: AST.Default.Node, mapper: NodeMapper): AST.Default.Node {
+    if (!isElement(root)) {
+        return root;
     }
 
+    return mapper({
+        ...root,
+        childNodes: root.childNodes.map((node) => mapElementNodes(node, mapper)),
+    } as AST.Default.Element);
+}
+
+export function removeCtrlReferences(root: AST.Default.Node, ctrlVars: string[]): AST.Default.Node {
+    return mapElementNodes(root, (node) => ({
+        ...node,
+        attrs: node.attrs.map((attr) => ({...attr, value: removeCtrlFromExpression(attr.value, ctrlVars)})),
+    }));
+}
+
+export function upgradeAttributeNames(root: AST.Default.Node): AST.Default.Node {
     const mapAttribute = (attr: AST.Default.Attribute) => {
         const mapping = attributeMapping[attr.name];
         if (!mapping) {
@@ -85,19 +89,18 @@ export function upgradeAttributeNames(node: AST.Default.Node): AST.Default.Node 
         return mapping(attr);
     };
 
-    return {
+    return mapElementNodes(root, (node) => ({
         ...node,
         attrs: node.attrs.map(mapAttribute).reduce((acc, arr) => acc.concat(arr), []),
-        childNodes: node.childNodes.map(upgradeAttributeNames),
-    } as AST.Default.Element;
+    }));
 }
 
 export function upgradeTemplate(source: string, options: Partial<ITemplateUpgradeOptions> = {}) {
-    options = { ...defaultOptions, ...options };
+    const opts = { ...defaultOptions, ...options };
     const parsed = parse5.parse('<body>' + source + '</body>') as AST.Default.Document;
     const body = (parsed.childNodes[0] as AST.Default.Element).childNodes[1];
     if (!isElement(body) || (body.tagName !== 'body')) {
         throw new Error('Template parsing failed: body tag missing');
     }
-    return parse5.serialize(upgradeAttributeNames(body));
+    return parse5.serialize(upgradeAttributeNames(removeCtrlReferences(body, opts.controllerVars)));
 }

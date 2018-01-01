@@ -41,5 +41,15 @@ describe('template-transforms', () => {
             expect(upgradeTemplate('<div title="Angular is Great!"></div>'))
                 .toEqual('<div title="Angular is Great!"></div>');
         });
+
+        it('should remove references to $ctrl from attributes', () => {
+            expect(upgradeTemplate('<div some-value="$ctrl.value"></div>'))
+                .toEqual('<div some-value="value"></div>');
+        });
+
+        it('should remove references to $ctrl in array access expressions', () => {
+            expect(upgradeTemplate(`<div some-value="$ctrl.bar[$ctrl['foo']]"></div>`))
+                .toEqual('<div some-value="bar[foo]"></div>');
+        });
     });
 });
