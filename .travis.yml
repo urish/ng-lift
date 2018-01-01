@@ -3,3 +3,6 @@ sudo: false
 node_js:
   - 7
   - stable
+script:
+  - yarn test:ci
+
