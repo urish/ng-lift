@@ -35,3 +35,15 @@ export function removeCtrlFromExpression(expression: string, controllerVars: str
     };
     return toSource(ts.transform<ts.SourceFile>(ast, [transformer]).transformed[0]);
 }
+
+export function transformNgRepeatExpression(expression: string) {
+    // Source:
+    // github.com/angular/angular.js/blob/e5c6174839e96113c93913dd8b3c4cca760dfc41/src/ng/directive/ngRepeat.js#L378
+    const regexp = /^\s*([\s\S]+?)\s+in\s+([\s\S]+?)(?:\s+as\s+([\s\S]+?))?(?:\s+track\s+by\s+([\s\S]+?))?\s*$/;
+    const match = expression.match(regexp);
+    if (match && !match[3] && !match[4]) {
+        return `let ${match[1]} of ${match[2]}`;
+    } else {
+        return expression;
+    }
+}

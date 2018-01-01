@@ -1,6 +1,6 @@
 import * as parse5 from 'parse5';
 import { AST } from 'parse5';
-import { negateExpression , removeCtrlFromExpression } from './template-expression';
+import { negateExpression, removeCtrlFromExpression, transformNgRepeatExpression } from './template-expression';
 
 export interface ITemplateUpgradeOptions {
     controllerVars: string[];
@@ -28,7 +28,11 @@ export const attributeMapping: IAttributeMapping = {
     'ng-if': '*ngIf',
     'ng-model': '[(ngModel)]',
     'ng-readonly': '[readonly]',
-    'ng-repeat': '*ngFor',
+    'ng-repeat': ((attr: AST.Default.Attribute) => [{
+        ...attr,
+        name: '*ngFor',
+        value: transformNgRepeatExpression(attr.value),
+    }]),
     'ng-selected': '[selected]',
     'ng-show': (attr: AST.Default.Attribute) => [{
         ...attr, name: '[hidden]', value: negateExpression(attr.value),
@@ -73,7 +77,7 @@ export function mapElementNodes(root: AST.Default.Node, mapper: NodeMapper): AST
 export function removeCtrlReferences(root: AST.Default.Node, ctrlVars: string[]): AST.Default.Node {
     return mapElementNodes(root, (node) => ({
         ...node,
-        attrs: node.attrs.map((attr) => ({...attr, value: removeCtrlFromExpression(attr.value, ctrlVars)})),
+        attrs: node.attrs.map((attr) => ({ ...attr, value: removeCtrlFromExpression(attr.value, ctrlVars) })),
     }));
 }
 

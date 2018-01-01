@@ -51,5 +51,15 @@ describe('template-transforms', () => {
             expect(upgradeTemplate(`<div some-value="$ctrl.bar[$ctrl['foo']]"></div>`))
                 .toEqual('<div some-value="bar[foo]"></div>');
         });
+
+        it('should convert `x in y` to `let x of y` in ng-repeat syntax', () => {
+            expect(upgradeTemplate('<div ng-repeat="x in y"></div>'))
+                .toEqual('<div *ngFor="let x of y"></div>');
+        });
+
+        it('should not change ng-repeat expression are invalid', () => {
+            expect(upgradeTemplate('<div ng-repeat="bla bla"></div>'))
+                .toEqual('<div *ngFor="bla bla"></div>');
+        });
     });
 });
