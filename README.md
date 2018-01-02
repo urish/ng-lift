@@ -3,7 +3,15 @@
 [![Build Status](https://travis-ci.org/urish/ng-lift.png?branch=master)](https://travis-ci.org/urish/ng-lift)
 [![Coverage Status](https://coveralls.io/repos/github/urish/ng-lift/badge.svg?branch=master)](https://coveralls.io/github/urish/ng-lift?branch=master)
 
-Automated tools for upgrading Angular.js to Angular apps
+Automated tooling for upgrading Angular.js apps to Angular
+
+## Install
+
+    yarn global add ng-lift
+
+or
+
+    npm install --global ng-lift
 
 ## CLI
 
@@ -16,6 +24,15 @@ Will transform the given Angular.js template to Angular syntax, and print the re
 You can also specify an output file name:
 
     ng-lift template -o upgrade-template.html my-template.html
+
+## API
+
+The package also exposes an API that you can use from your code:
+
+    const { upgradeTemplate } = require('ng-lift');
+    console.log(upgradeTemplate('<div ng-if="$ctrl.foo">It works!</div>'));
+
+    // output: <div *ngIf="foo">It works!</div>
 
 ## How does it work?
 
