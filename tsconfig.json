@@ -15,7 +15,7 @@
     "noFallthroughCasesInSwitch": true,
     "rootDir": "src",
     "outDir": "dist",
-    "lib": ["es5", "es2015.core", "es2015.promise", "es2015.collection", "es2015.iterable"],
+    "lib": ["es5", "es2015.core", "es2015.promise", "es2015.collection", "es2015.iterable"]
   },
   "include": [
     "src/**/*.ts"

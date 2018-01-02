@@ -2,9 +2,12 @@
   "name": "ng-lift",
   "version": "0.1.0",
   "main": "index.js",
-  "repository": "git@github.com:urish/ng-lift.git",
-  "author": "Uri Shaked <uri@salsa4fun.co.il>",
+  "repository": "https://github.com/urish/ng-lift",
+  "author": "Uri Shaked <uri@urishaked.com>",
   "license": "MIT",
+  "bin": {
+    "ng-lift": "dist/cli.js"
+  },
   "scripts": {
     "build": "tsc",
     "prepublish": "npm run build",
@@ -17,13 +20,17 @@
     "dist"
   ],
   "dependencies": {
+    "commander": "^2.12.2",
     "parse5": "^3.0.3",
     "ts-emitter": "^0.4.0",
-    "typescript": "^2.4.2"
+    "typescript": "^2.4.2",
+    "update-notifier": "^2.3.0"
   },
   "devDependencies": {
+    "@types/commander": "^2.12.2",
     "@types/jest": "^22.0.0",
     "@types/parse5": "^3.0.0",
+    "@types/update-notifier": "^1.0.2",
     "coveralls": "^3.0.0",
     "jest": "^22.0.4",
     "ts-jest": "^22.0.0",
