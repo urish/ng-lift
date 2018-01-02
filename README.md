@@ -29,10 +29,13 @@ You can also specify an output file name:
 
 The package also exposes an API that you can use from your code:
 
-    const { upgradeTemplate } = require('ng-lift');
-    console.log(upgradeTemplate('<div ng-if="$ctrl.foo">It works!</div>'));
+```javascript
+const { upgradeTemplate } = require('ng-lift');
 
-    // output: <div *ngIf="foo">It works!</div>
+console.log(upgradeTemplate('<div ng-if="$ctrl.foo">It works!</div>'));
+
+// output: <div *ngIf="foo">It works!</div>
+```
 
 ## How does it work?
 
