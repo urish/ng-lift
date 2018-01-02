@@ -61,5 +61,10 @@ describe('template-transforms', () => {
             expect(upgradeTemplate('<div ng-repeat="bla bla"></div>'))
                 .toEqual('<div *ngFor="bla bla"></div>');
         });
+
+        it('should return a div with text unmodified', () => {
+            expect(upgradeTemplate('<div>hello</div>'))
+                .toEqual('<div>hello</div>');
+        });
     });
 });

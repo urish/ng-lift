@@ -17,7 +17,7 @@ const defaultOptions: ITemplateUpgradeOptions = {
 };
 
 function isElement(node: AST.Default.Node): node is AST.Default.Element {
-    return (typeof node as any).childNodes !== 'undefined';
+    return typeof (node as any).childNodes !== 'undefined';
 }
 
 export const attributeMapping: IAttributeMapping = {
