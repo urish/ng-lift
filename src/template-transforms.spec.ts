@@ -37,6 +37,16 @@ describe('template-transforms', () => {
                 .toEqual('<div href="https://mysite.com/{{page}}"></div>');
         });
 
+        it('should replace `ng-class` with `[ngClass]`', () => {
+            expect(upgradeTemplate('<div ng-class="myVar"></div>'))
+                .toEqual('<div [ngClass]="myVar"></div>');
+        });
+
+        it('should replace `ng-style` with `[ngStyle]`', () => {
+            expect(upgradeTemplate('<div ng-style="myVar"></div>'))
+                .toEqual('<div [ngStyle]="myVar"></div>');
+        });
+
         it('should not change `title` attributes', () => {
             expect(upgradeTemplate('<div title="Angular is Great!"></div>'))
                 .toEqual('<div title="Angular is Great!"></div>');

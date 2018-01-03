@@ -22,6 +22,7 @@ function isElement(node: AST.Default.Node): node is AST.Default.Element {
 
 export const attributeMapping: IAttributeMapping = {
     'ng-checked': '[checked]',
+    'ng-class': '[ngClass]',
     'ng-disabled': '[disabled]',
     'ng-hide': '[hidden]',
     'ng-href': 'href',
@@ -39,6 +40,7 @@ export const attributeMapping: IAttributeMapping = {
     }],
     'ng-src': 'src',
     'ng-srcset': 'srcset',
+    'ng-style': '[ngStyle]',
 
     // Events
     'ng-blur': '(blur)',
