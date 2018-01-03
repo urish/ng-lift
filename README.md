@@ -41,6 +41,28 @@ console.log(upgradeTemplate('<div ng-if="$ctrl.foo">It works!</div>'));
 
 The template upgrade tool basically goes over all HTML elements, and looks for Angular.js specific directives, such as `ng-click`. It then automatically transforms them to their Angular counterpart, `(click)` in this example. In adddition, any references to the controller variable `$ctrl` are stripped (this can be customized with the `--controller` commandline option), and `ng-repeat` attributes are rewritten to the new `let ... of ...` format.
 
+## Example
+
+The following input:
+
+```html
+<div ng-repeat="user in $ctrl.users">
+  <img ng-click="$ctrl.changeProfile(user)" ng-src="{{user.profileImage}}" alt="Profile Image">
+  <a ng-href="{{user.profileUrl}}">{{user.name}}</a>
+    <input ng-if="$ctrl.editMode" ng-model="user.bio" ng-disabled="$ctrl.readonly">
+</div>
+```
+
+Will transform to:
+
+```html
+<div *ngFor="let user of users">
+  <img (click)="changeProfile(user)" src="{{user.profileImage}}" alt="Profile Image">
+  <a href="{{user.profileUrl}}">{{user.name}}</a>
+  <input *ngIf="editMode" [(ngModel)]="user.bio" [disabled]="readonly">
+</div>
+```
+
 ## License
 
 Copyright (C) 2017, 2018, Uri Shaked. Licensed under the MIT license.
