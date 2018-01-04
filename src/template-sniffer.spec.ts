@@ -6,8 +6,16 @@ describe('template-sniffer', () => {
             expect(guessAngularVersion('<div ng-if="high"></div>')).toEqual('angularjs');
         });
 
+        it('should return `angularjs` for a template containing ng-click', () => {
+            expect(guessAngularVersion('<div ng-click="$ctrl.onClick()">Click me</div>')).toEqual('angularjs');
+        });
+
         it('should return `angular` for a template containing *ngIf', () => {
             expect(guessAngularVersion('<div *ngIf="high"></div>')).toEqual('angular');
+        });
+
+        it('should return `angular` for a template containing (click)', () => {
+            expect(guessAngularVersion('<div (click)="onClick()">Click me</div>')).toEqual('angular');
         });
 
         it('should return `both` for a template containing both *ngIf and ng-model', () => {
