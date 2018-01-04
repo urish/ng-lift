@@ -26,20 +26,19 @@ export const angularJsDirectives = [
 export type ITemplateVersionResult = 'angularjs' | 'angular' | 'both' | 'unknown';
 
 export function guessAngularVersion(templateSrc: string): ITemplateVersionResult {
-    const allAttributes: string[] = [];
+    const allAttributes = new Set<string>();
     const parsed = parse5.parse(templateSrc) as AST.Default.Document;
 
     mapElementNodes(parsed, (element) => {
         if (element.attrs) {
             element.attrs.map((attr) => attr.name)
-                .filter((attr) => allAttributes.indexOf(attr) < 0)
-                .forEach((attr) => allAttributes.push(attr));
+                .forEach((attr) => allAttributes.add(attr));
         }
         return element;
     });
 
-    const angular = angularDirectives.some((directive) => allAttributes.indexOf(directive.toLowerCase()) >= 0);
-    const angularJs = angularJsDirectives.some((directive) => allAttributes.indexOf(directive.toLowerCase()) >= 0);
+    const angular = angularDirectives.some((directive) => allAttributes.has(directive.toLowerCase()));
+    const angularJs = angularJsDirectives.some((directive) => allAttributes.has(directive.toLowerCase()));
     if (angular && angularJs) {
         return 'both';
     }
