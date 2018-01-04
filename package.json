@@ -1,6 +1,6 @@
 {
   "name": "ng-lift",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "main": "dist/index.js",
   "repository": "https://github.com/urish/ng-lift",
   "author": "Uri Shaked <uri@urishaked.com>",
