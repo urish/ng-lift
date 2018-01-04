@@ -20,6 +20,10 @@ function isElement(node: AST.Default.Node): node is AST.Default.Element {
     return typeof (node as any).childNodes !== 'undefined';
 }
 
+function isTextNode(node: AST.Default.Node): node is AST.Default.TextNode {
+    return node.nodeName === '#text';
+}
+
 export const attributeMapping: IAttributeMapping = {
     'ng-checked': '[checked]',
     'ng-class': '[ngClass]',
@@ -76,10 +80,32 @@ export function mapElementNodes(root: AST.Default.Node, mapper: NodeMapper): AST
     } as AST.Default.Element);
 }
 
+function removeCtrlFromInterpolationExpression(value: string, ctrlVars: string[]) {
+    return value.replace(/\{\{([^}]+)\}\}/g,
+        (_, expression) => `{{${removeCtrlFromExpression(expression, ctrlVars)}}}`);
+}
+
+function removeCtrlFromAttributeExpression(value: string, ctrlVars: string[]) {
+    if (/\{\{.+\}\}/.test(value)) {
+        return removeCtrlFromInterpolationExpression(value, ctrlVars);
+    } else {
+        return removeCtrlFromExpression(value, ctrlVars);
+    }
+}
+
+function removeCtrlFromTextNode(node: AST.Default.TextNode, ctrlVars: string[]) {
+    return {
+        ...node,
+        value: removeCtrlFromAttributeExpression(node.value, ctrlVars),
+    };
+}
+
 export function removeCtrlReferences(root: AST.Default.Node, ctrlVars: string[]): AST.Default.Node {
     return mapElementNodes(root, (node) => ({
         ...node,
-        attrs: node.attrs.map((attr) => ({ ...attr, value: removeCtrlFromExpression(attr.value, ctrlVars) })),
+        childNodes: node.childNodes
+            .map((child) => isTextNode(child) ? removeCtrlFromTextNode(child, ctrlVars) : child),
+        attrs: node.attrs.map((attr) => ({ ...attr, value: removeCtrlFromAttributeExpression(attr.value, ctrlVars) })),
     }));
 }
 

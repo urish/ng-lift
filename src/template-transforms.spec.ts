@@ -23,8 +23,8 @@ describe('template-transforms', () => {
         });
 
         it('should not transform `ng-attr` bindings with multiple interpolation expressions', () => {
-            expect(upgradeTemplate('<div ng-attr-placeholder="{{foo}} {{bar}}"></div>'))
-                .toEqual('<div ng-attr-placeholder="{{foo}} {{bar}}"></div>');
+            expect(upgradeTemplate('<div ng-attr-placeholder="{{foo}} - {{bar}}"></div>'))
+                .toEqual('<div ng-attr-placeholder="{{foo}} - {{bar}}"></div>');
         });
 
         it('should replace `ng-show="expression"` with `[hidden]="!expression"`', () => {
@@ -65,6 +65,16 @@ describe('template-transforms', () => {
         it('should remove references to $ctrl from attributes', () => {
             expect(upgradeTemplate('<div some-value="$ctrl.value"></div>'))
                 .toEqual('<div some-value="value"></div>');
+        });
+
+        it('should remove references to $ctrl from interpolation expressions', () => {
+            expect(upgradeTemplate('<span>Hello, {{$ctrl.name}}</span>'))
+                .toEqual('<span>Hello, {{name}}</span>');
+        });
+
+        it('should remove references to $ctrl from attribute interpolation expressions', () => {
+            expect(upgradeTemplate('<div title="Angular is {{$ctrl.compliment}}!"></div>'))
+                .toEqual('<div title="Angular is {{compliment}}!"></div>');
         });
 
         it('should remove references to $ctrl in array access expressions', () => {
