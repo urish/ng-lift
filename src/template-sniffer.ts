@@ -5,6 +5,12 @@ import { mapElementNodes } from './template-transforms';
 
 export const angularDirectives = [
     '*ngIf', '*ngFor', '[(ngModel)]', '[ngStyle]', '[ngClass]',
+    '[checked]', '[class]', '[disabled]', '[href]', '[readonly]',
+    '[selected]', '[src]', '[srcset]', '[style]',
+    // Events:
+    '(blur)', '(change)', '(click)', '(copy)', '(cut)', '(dblclick)', '(focus)', '(keydown)',
+    '(keypress)', '(keyup)', '(mousedown)', '(mouseenter)', '(mouseleave)', '(mousemove)',
+    '(mouseover)', '(mouseup)', '(paste)', '(submit)',
 ];
 
 export const angularJsDirectives = [
