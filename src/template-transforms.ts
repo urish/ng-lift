@@ -103,9 +103,9 @@ function removeCtrlFromTextNode(node: AST.Default.TextNode, ctrlVars: string[]) 
 export function removeCtrlReferences(root: AST.Default.Node, ctrlVars: string[]): AST.Default.Node {
     return mapElementNodes(root, (node) => ({
         ...node,
+        attrs: node.attrs.map((attr) => ({ ...attr, value: removeCtrlFromAttributeExpression(attr.value, ctrlVars) })),
         childNodes: node.childNodes
             .map((child) => isTextNode(child) ? removeCtrlFromTextNode(child, ctrlVars) : child),
-        attrs: node.attrs.map((attr) => ({ ...attr, value: removeCtrlFromAttributeExpression(attr.value, ctrlVars) })),
     }));
 }
 
