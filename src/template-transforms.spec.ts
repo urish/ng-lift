@@ -17,6 +17,16 @@ describe('template-transforms', () => {
                 .toEqual('<div [hidden]="something"></div>');
         });
 
+        it('should replace `ng-attr` with [attr], and remove interpolation markers', () => {
+            expect(upgradeTemplate('<svg><circle ng-attr-cx="{{cx}}"></circle></svg>'))
+                .toEqual('<svg><circle [attr.cx]="cx"></circle></svg>');
+        });
+
+        it('should not transform `ng-attr` bindings with multiple interpolation expressions', () => {
+            expect(upgradeTemplate('<div ng-attr-placeholder="{{foo}} {{bar}}"></div>'))
+                .toEqual('<div ng-attr-placeholder="{{foo}} {{bar}}"></div>');
+        });
+
         it('should replace `ng-show="expression"` with `[hidden]="!expression"`', () => {
             expect(upgradeTemplate('<div ng-show="expression"></div>'))
                 .toEqual('<div [hidden]="!expression"></div>');

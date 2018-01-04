@@ -83,10 +83,27 @@ export function removeCtrlReferences(root: AST.Default.Node, ctrlVars: string[])
     }));
 }
 
+function transformNgAttrExpression(attr: AST.Default.Attribute) {
+    const { name, value } = attr;
+    const match = /^\s*\{\{(.+)\}\}\s*$/.exec(value);
+    if (match && !match[1].includes('{{')) {
+        return {
+            ...attr,
+            name: `[attr.${name.replace(/^ng-attr-/, '')}]`,
+            value: match[1],
+        };
+    } else {
+        return attr;
+    }
+}
+
 export function upgradeAttributeNames(root: AST.Default.Node): AST.Default.Node {
     const mapAttribute = (attr: AST.Default.Attribute) => {
         const mapping = attributeMapping[attr.name];
         if (!mapping) {
+            if (attr.name.startsWith('ng-attr-')) {
+                return [transformNgAttrExpression(attr)];
+            }
             return [attr];
         }
         if (typeof mapping === 'string') {
