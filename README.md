@@ -37,7 +37,7 @@ The following input:
 <div ng-repeat="user in $ctrl.users">
   <img ng-click="$ctrl.changeProfile(user)" ng-src="{{user.profileImage}}" alt="Profile Image">
   <a ng-href="{{user.profileUrl}}">{{user.name}}</a>
-    <input ng-if="$ctrl.editMode" ng-model="user.bio" ng-disabled="$ctrl.readonly">
+  <input ng-if="$ctrl.editMode" ng-model="user.bio" ng-disabled="$ctrl.readonly">
 </div>
 ```
 
