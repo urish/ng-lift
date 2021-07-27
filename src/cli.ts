@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import * as program from 'commander';
+import { Command } from 'commander';
 import * as fs from 'fs';
 import * as updateNotifier from 'update-notifier';
 
@@ -10,9 +10,9 @@ import { ITemplateUpgradeOptions, upgradeTemplate } from './template-transforms'
 
 // tslint:disable-next-line:no-var-requires
 const pkg = require('../package.json');
-updateNotifier({pkg}).notify();
+updateNotifier({ pkg }).notify();
 
-function templateHandler(input: string, opts: {[key: string]: any}) {
+function templateHandler(input: string, opts: { [key: string]: any }) {
     const options: Partial<ITemplateUpgradeOptions> = {};
     if (opts.controller) {
         options.controllerVars = opts.controller.split(',');
@@ -25,6 +25,7 @@ function templateHandler(input: string, opts: {[key: string]: any}) {
     }
 }
 
+const program = new Command();
 program
     .version(pkg.version)
     .command('template <source.html>')

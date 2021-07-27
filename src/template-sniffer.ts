@@ -1,5 +1,4 @@
 import * as parse5 from 'parse5';
-import { AST } from 'parse5';
 
 import { mapElementNodes } from './template-transforms';
 
@@ -27,7 +26,7 @@ export type ITemplateVersionResult = 'angularjs' | 'angular' | 'both' | 'unknown
 
 export function guessAngularVersion(templateSrc: string): ITemplateVersionResult {
     const allAttributes = new Set<string>();
-    const parsed = parse5.parse(templateSrc) as AST.Default.Document;
+    const parsed = parse5.parse(templateSrc) as parse5.Document;
 
     mapElementNodes(parsed, (element) => {
         if (element.attrs) {

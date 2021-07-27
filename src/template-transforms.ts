@@ -1,12 +1,11 @@
 import * as parse5 from 'parse5';
-import { AST } from 'parse5';
 import { negateExpression, removeCtrlFromExpression, transformNgRepeatExpression } from './template-expression';
 
 export interface ITemplateUpgradeOptions {
     controllerVars: string[];
 }
 
-export type AttributeMappingFn = (attr: AST.Default.Attribute) => AST.Default.Attribute[];
+export type AttributeMappingFn = (attr: parse5.Attribute) => parse5.Attribute[];
 
 export interface IAttributeMapping {
     [key: string]: string | AttributeMappingFn;
@@ -16,11 +15,11 @@ const defaultOptions: ITemplateUpgradeOptions = {
     controllerVars: ['$ctrl'],
 };
 
-function isElement(node: AST.Default.Node): node is AST.Default.Element {
+function isElement(node: parse5.Node): node is parse5.Element {
     return typeof (node as any).childNodes !== 'undefined';
 }
 
-function isTextNode(node: AST.Default.Node): node is AST.Default.TextNode {
+function isTextNode(node: parse5.Node): node is parse5.TextNode {
     return node.nodeName === '#text';
 }
 
@@ -33,13 +32,13 @@ export const attributeMapping: IAttributeMapping = {
     'ng-if': '*ngIf',
     'ng-model': '[(ngModel)]',
     'ng-readonly': '[readonly]',
-    'ng-repeat': ((attr: AST.Default.Attribute) => [{
+    'ng-repeat': ((attr: parse5.Attribute) => [{
         ...attr,
         name: '*ngFor',
         value: transformNgRepeatExpression(attr.value),
     }]),
     'ng-selected': '[selected]',
-    'ng-show': (attr: AST.Default.Attribute) => [{
+    'ng-show': (attr: parse5.Attribute) => [{
         ...attr, name: '[hidden]', value: negateExpression(attr.value),
     }],
     'ng-src': 'src',
@@ -67,9 +66,9 @@ export const attributeMapping: IAttributeMapping = {
     'ng-submit': '(submit)',
 };
 
-export type NodeMapper = (node: AST.Default.Element) => AST.Default.Element;
+export type NodeMapper = (node: parse5.Element) => parse5.Element;
 
-export function mapElementNodes(root: AST.Default.Node, mapper: NodeMapper): AST.Default.Node {
+export function mapElementNodes(root: parse5.Node, mapper: NodeMapper): parse5.Node {
     if (!isElement(root)) {
         return root;
     }
@@ -77,7 +76,7 @@ export function mapElementNodes(root: AST.Default.Node, mapper: NodeMapper): AST
     return mapper({
         ...root,
         childNodes: root.childNodes.map((node) => mapElementNodes(node, mapper)),
-    } as AST.Default.Element);
+    } as parse5.Element);
 }
 
 function removeCtrlFromInterpolationExpression(value: string, ctrlVars: string[]) {
@@ -93,14 +92,14 @@ function removeCtrlFromAttributeExpression(value: string, ctrlVars: string[]) {
     }
 }
 
-function removeCtrlFromTextNode(node: AST.Default.TextNode, ctrlVars: string[]) {
+function removeCtrlFromTextNode(node: parse5.TextNode, ctrlVars: string[]) {
     return {
         ...node,
         value: removeCtrlFromAttributeExpression(node.value, ctrlVars),
     };
 }
 
-export function removeCtrlReferences(root: AST.Default.Node, ctrlVars: string[]): AST.Default.Node {
+export function removeCtrlReferences(root: parse5.Node, ctrlVars: string[]): parse5.Node {
     return mapElementNodes(root, (node) => ({
         ...node,
         attrs: node.attrs.map((attr) => ({ ...attr, value: removeCtrlFromAttributeExpression(attr.value, ctrlVars) })),
@@ -109,7 +108,7 @@ export function removeCtrlReferences(root: AST.Default.Node, ctrlVars: string[])
     }));
 }
 
-function transformNgAttrExpression(attr: AST.Default.Attribute) {
+function transformNgAttrExpression(attr: parse5.Attribute) {
     const { name, value } = attr;
     const match = /^\s*\{\{(.+)\}\}\s*$/.exec(value);
     if (match && !match[1].includes('{{')) {
@@ -123,8 +122,8 @@ function transformNgAttrExpression(attr: AST.Default.Attribute) {
     }
 }
 
-export function upgradeAttributeNames(root: AST.Default.Node): AST.Default.Node {
-    const mapAttribute = (attr: AST.Default.Attribute) => {
+export function upgradeAttributeNames(root: parse5.Node): parse5.Node {
+    const mapAttribute = (attr: parse5.Attribute) => {
         const mapping = attributeMapping[attr.name];
         if (!mapping) {
             if (attr.name.startsWith('ng-attr-')) {
@@ -146,8 +145,8 @@ export function upgradeAttributeNames(root: AST.Default.Node): AST.Default.Node 
 
 export function upgradeTemplate(source: string, options: Partial<ITemplateUpgradeOptions> = {}) {
     const opts = { ...defaultOptions, ...options };
-    const parsed = parse5.parse('<body>' + source + '</body>') as AST.Default.Document;
-    const body = (parsed.childNodes[0] as AST.Default.Element).childNodes[1];
+    const parsed = parse5.parse('<body>' + source + '</body>') as parse5.Document;
+    const body = (parsed.childNodes[0] as parse5.Element).childNodes[1];
     if (!isElement(body) || (body.tagName !== 'body')) {
         throw new Error('Template parsing failed: body tag missing');
     }
